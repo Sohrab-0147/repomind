@@ -281,43 +281,6 @@ embed_model = cfg["embeddings"]["model"]
 collection = cfg["vector_store"]["collection_name"]
 
 
-with st.sidebar:
-    st.markdown("#### Settings")
-
-    st.session_state.repo_path = st.text_input(
-        "Repository",
-        value=st.session_state.repo_path,
-        label_visibility="collapsed",
-        placeholder="Path to repository",
-    )
-
-    c1, c2 = st.columns(2)
-    with c1:
-        if st.button("Reindex", use_container_width=True):
-            st.cache_resource.clear()
-            with st.spinner("Reindexing..."):
-                index_codebase(st.session_state.repo_path, force_reindex=True)
-            st.toast("Index rebuilt", icon="✓")
-    with c2:
-        if st.button("New chat", use_container_width=True):
-            st.session_state.session_id = str(uuid.uuid4())
-            st.session_state.messages = []
-            st.rerun()
-
-    st.markdown("#### Runtime")
-    st.markdown(f"""
-<div class="rm-status">
-  <div class="rm-status-row"><span class="rm-status-label">LLM</span><span class="rm-status-value">{llm_model.split('/')[-1]}</span></div>
-  <div class="rm-status-row"><span class="rm-status-label">Embedder</span><span class="rm-status-value">{embed_model.split('/')[-1]}</span></div>
-  <div class="rm-status-row"><span class="rm-status-label">Vector store</span><span class="rm-status-value">Qdrant</span></div>
-  <div class="rm-status-row"><span class="rm-status-label">Collection</span><span class="rm-status-value">{collection}</span></div>
-  <div class="rm-status-row"><span class="rm-status-label">Session</span><span class="rm-status-value">{st.session_state.session_id[:8]}</span></div>
-</div>
-""", unsafe_allow_html=True)
-
-    st.caption("Filesystem and shell tools are sandboxed to the workspace. Dangerous commands are blocked.")
-
-
 st.markdown("""
 <div class="rm-hero">
   <div class="rm-logo"><span class="rm-logo-dot"></span> RepoMind</div>
@@ -335,6 +298,27 @@ st.markdown("""
   </div>
 </div>
 """, unsafe_allow_html=True)
+
+
+
+
+with st.expander("Runtime info", expanded=False):
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("LLM", llm_model.split("/")[-1][:18])
+    c2.metric("Embedder", embed_model.split("/")[-1][:18])
+    c3.metric("Vector Store", "Qdrant")
+    c4.metric("Session", st.session_state.session_id[:8])
+
+    if st.button("Reindex codebase"):
+        st.cache_resource.clear()
+        with st.spinner("Reindexing..."):
+            index_codebase(st.session_state.repo_path, force_reindex=True)
+        st.success("Reindexed")
+
+    if st.button("New chat"):
+        st.session_state.session_id = str(uuid.uuid4())
+        st.session_state.messages = []
+        st.rerun()
 
 
 with st.spinner("Indexing codebase..."):
