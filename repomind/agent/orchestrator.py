@@ -13,22 +13,26 @@ def handle_query_stream(question: str, thread_id: str) -> Iterator[str]:
     agent = build_agent()
     agent_config = {"configurable": {"thread_id": thread_id}}
 
-    for step in agent.stream(
+    for chunk, metadata in agent.stream(
         {"messages": [{"role": "user", "content": question}]},
         agent_config,
-        stream_mode="values",
+        stream_mode="messages",
     ):
-        last = step["messages"][-1]
-        if type(last).__name__ == "AIMessage":
-            content = getattr(last, "content", "")
-            if isinstance(content, list):
-                content = " ".join(
-                    b.get("text", "") for b in content if isinstance(b, dict)
-                )
-            if content and not getattr(last, "tool_calls", None):
-                yield content
+        # Only forward text tokens from AI message chunks
+        if type(chunk).__name__ != "AIMessageChunk":
+            continue
+        # Skip tool-call JSON chunks
+        if getattr(chunk, "tool_call_chunks", None):
+            continue
+        content = getattr(chunk, "content", "")
+        if isinstance(content, list):
+            content = "".join(
+                b.get("text", "") for b in content if isinstance(b, dict)
+            )
+        if content:
+            yield content
 
 
 def handle_query(question: str, thread_id: str) -> str:
     chunks = list(handle_query_stream(question, thread_id))
-    return chunks[-1] if chunks else "No response generated."
+    return "".join(chunks) if chunks else "No response generated."
