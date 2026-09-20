@@ -26,9 +26,10 @@ def build_agent():
     checkpointer = get_checkpointer()
     logger.info("Creating agent with 4 core tools + memory")
 
-    return create_agent(
+        return create_agent(
         model=llm,
         tools=[search_codebase, read_file, list_directory, run_command],
         system_prompt=SYSTEM_PROMPT,
         checkpointer=checkpointer,
+        recursion_limit=6,
     )
