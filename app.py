@@ -20,7 +20,7 @@ from repomind.config import load_config
 
 st.set_page_config(
     page_title="RepoMind",
-    page_icon="◆",
+    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -235,6 +235,16 @@ html, body, [class*="css"] {
 .rm-footer a:hover {
     text-decoration: underline;
 }
+
+/* Force sidebar toggle visible */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #6366f1 !important;
+    z-index: 999999 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -354,7 +364,7 @@ if not st.session_state.messages:
 
 
 for msg in st.session_state.messages:
-    avatar = "🧑" if msg["role"] == "user" else "◆"
+    avatar = "🧑" if msg["role"] == "user" else "🤖"
     with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
@@ -363,7 +373,7 @@ def _run(prompt: str):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="🧑"):
         st.markdown(prompt)
-    with st.chat_message("assistant", avatar="◆"):
+    with st.chat_message("assistant", avatar="🤖"):
         try:
             response = st.write_stream(
                 handle_query_stream(prompt, st.session_state.session_id)
