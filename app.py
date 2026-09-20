@@ -22,7 +22,7 @@ st.set_page_config(
     page_title="RepoMind",
     page_icon="🧠",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 st.markdown("""
@@ -40,9 +40,12 @@ st.markdown("""
 [data-testid="stToolbar"] {display: none;}
 
 html, body, [class*="css"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    color: #111827;
+    -webkit-font-smoothing: antialiased;
 }
+
+.stApp { background: #fbfbfd; }
 
 .block-container {
     max-width: 1080px;
@@ -60,18 +63,18 @@ html, body, [class*="css"] {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #6366f1;
-    margin-bottom: 1rem;
+    color: #4338ca;
+    margin-bottom: 1.25rem;
 }
 .rm-logo-dot {
     width: 8px; height: 8px;
-    background: #6366f1;
+    background: #4f46e5;
     border-radius: 50%;
-    box-shadow: 0 0 0 4px rgba(99,102,241,0.15);
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.18);
     animation: rm-dot-pulse 2s ease-in-out infinite;
 }
 .rm-title {
@@ -79,63 +82,64 @@ html, body, [class*="css"] {
     font-weight: 800;
     letter-spacing: -0.035em;
     line-height: 1.05;
-    margin: 0 0 0.75rem 0;
+    margin: 0 0 0.9rem 0;
     color: #0f172a;
 }
 .rm-subtitle {
-    font-size: 1.1rem;
-    color: #64748b;
-    max-width: 640px;
-    line-height: 1.6;
+    font-size: 1.08rem;
+    color: #374151;
+    max-width: 660px;
+    line-height: 1.65;
     margin: 0;
+    font-weight: 400;
 }
 .rm-features {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
 }
 .rm-chip {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: #475569;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    padding: 0.28rem 0.65rem;
+    gap: 0.4rem;
+    font-size: 0.79rem;
+    font-weight: 600;
+    color: #1f2937;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    padding: 0.32rem 0.7rem;
     border-radius: 999px;
-    transition: border-color 0.15s ease, color 0.15s ease;
-}
-.rm-chip:hover {
-    border-color: #6366f1;
-    color: #4338ca;
 }
 .rm-chip::before {
     content: "";
     width: 6px; height: 6px;
-    background: #10b981;
+    background: #059669;
     border-radius: 50%;
 }
 
 .rm-empty-title {
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #94a3b8;
-    margin: 2rem 0 0.9rem 0;
+    color: #6b7280;
+    margin: 2rem 0 1rem 0;
 }
 
 [data-testid="stChatMessage"] {
     background: #ffffff;
-    border: 1px solid #e9edf2;
-    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
     padding: 1.25rem 1.4rem;
     margin-bottom: 0.75rem;
-    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+    box-shadow: 0 1px 3px rgba(15,23,42,0.05);
     animation: rm-fade-in 0.3s ease-out;
+    color: #111827;
+}
+[data-testid="stChatMessage"] p,
+[data-testid="stChatMessage"] li {
+    color: #111827 !important;
 }
 
 .stMarkdown pre {
@@ -144,106 +148,84 @@ html, body, [class*="css"] {
     border: none;
     padding: 1rem 1.15rem;
 }
+.stMarkdown pre code { color: #e5e7eb !important; }
 .stMarkdown code {
-    background: #f1f5f9;
-    color: #4338ca;
+    background: #eef2ff;
+    color: #3730a3;
     padding: 0.12rem 0.4rem;
     border-radius: 5px;
-}
-
-[data-testid="stSidebar"] {
-    background: #fafbfc;
-    border-right: 1px solid #e9edf2;
-}
-[data-testid="stSidebar"] .block-container {
-    padding-top: 2rem;
-}
-
-.rm-status {
-    background: #ffffff;
-    border: 1px solid #e9edf2;
-    border-radius: 12px;
-    padding: 0.9rem 1rem;
-    margin: 0.5rem 0;
-}
-.rm-status-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.82rem;
-    padding: 0.28rem 0;
-}
-.rm-status-label { color: #64748b; }
-.rm-status-value {
-    color: #0f172a;
-    font-weight: 600;
-    font-family: 'SF Mono', Menlo, monospace;
-    font-size: 0.78rem;
+    font-weight: 500;
 }
 
 .rm-suggest .stButton > button {
     width: 100%;
     text-align: left;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #d1d5db;
     border-radius: 12px;
-    padding: 1rem 1.1rem;
+    padding: 1rem 1.15rem;
     font-size: 0.92rem;
     font-weight: 500;
-    color: #334155;
-    transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    color: #1f2937;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
 }
 .rm-suggest .stButton > button:hover {
-    border-color: #6366f1;
-    color: #4338ca;
-    box-shadow: 0 4px 16px -8px rgba(99,102,241,0.25);
-}
-
-[data-testid="stSidebar"] .stButton > button {
-    width: 100%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 9px;
-    font-size: 0.85rem;
-    color: #334155;
-    padding: 0.55rem;
-    transition: border-color 0.15s ease, color 0.15s ease;
-}
-[data-testid="stSidebar"] .stButton > button:hover {
-    border-color: #6366f1;
-    color: #4338ca;
+    border-color: #4f46e5;
+    color: #3730a3;
+    box-shadow: 0 6px 20px -8px rgba(79,70,229,0.28);
 }
 
 [data-testid="stChatInput"] {
-    border: 1px solid #e2e8f0;
+    border: 1px solid #d1d5db;
     border-radius: 14px;
-    box-shadow: 0 8px 32px -12px rgba(15,23,42,0.12);
+    box-shadow: 0 8px 32px -12px rgba(15,23,42,0.15);
     background: #ffffff;
+}
+[data-testid="stChatInput"] textarea {
+    color: #111827 !important;
+    font-size: 0.98rem;
+}
+[data-testid="stChatInput"] textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+[data-testid="stExpander"] {
+    background: #ffffff;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 12px;
+    overflow: hidden;
+}
+[data-testid="stExpander"] summary {
+    color: #1f2937 !important;
+    font-weight: 600;
+}
+
+[data-testid="stMetricValue"] {
+    color: #111827 !important;
+    font-weight: 700;
+}
+[data-testid="stMetricLabel"] {
+    color: #4b5563 !important;
 }
 
 .rm-footer {
     text-align: center;
-    color: #94a3b8;
-    font-size: 0.8rem;
+    color: #6b7280;
+    font-size: 0.82rem;
     padding: 3rem 0 1rem 0;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid #e5e7eb;
     margin-top: 3rem;
 }
 .rm-footer a {
-    color: #6366f1;
+    color: #4f46e5;
     text-decoration: none;
+    font-weight: 500;
 }
-.rm-footer a:hover {
-    text-decoration: underline;
-}
+.rm-footer a:hover { text-decoration: underline; }
 
-/* Force sidebar toggle visible */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapsedControl"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    color: #6366f1 !important;
-    z-index: 999999 !important;
+.stButton > button {
+    color: #1f2937;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -300,8 +282,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-
-
 with st.expander("Runtime info", expanded=False):
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("LLM", llm_model.split("/")[-1][:18])
@@ -309,16 +289,18 @@ with st.expander("Runtime info", expanded=False):
     c3.metric("Vector Store", "Qdrant")
     c4.metric("Session", st.session_state.session_id[:8])
 
-    if st.button("Reindex codebase"):
-        st.cache_resource.clear()
-        with st.spinner("Reindexing..."):
-            index_codebase(st.session_state.repo_path, force_reindex=True)
-        st.success("Reindexed")
-
-    if st.button("New chat"):
-        st.session_state.session_id = str(uuid.uuid4())
-        st.session_state.messages = []
-        st.rerun()
+    b1, b2 = st.columns(2)
+    with b1:
+        if st.button("Reindex codebase", use_container_width=True):
+            st.cache_resource.clear()
+            with st.spinner("Reindexing..."):
+                index_codebase(st.session_state.repo_path, force_reindex=True)
+            st.success("Reindexed")
+    with b2:
+        if st.button("New chat", use_container_width=True):
+            st.session_state.session_id = str(uuid.uuid4())
+            st.session_state.messages = []
+            st.rerun()
 
 
 with st.spinner("Indexing codebase..."):
@@ -353,18 +335,49 @@ for msg in st.session_state.messages:
         st.markdown(msg["content"])
 
 
+TOOL_META = {
+    "search_codebase": ("🔍", "Searching codebase"),
+    "read_file": ("📄", "Reading file"),
+    "list_directory": ("📁", "Listing directory"),
+    "run_command": ("⚡", "Running command"),
+    "run_in_directory": ("⚡", "Running command"),
+}
+
+
 def _run(prompt: str):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user", avatar="🧑"):
         st.markdown(prompt)
+
     with st.chat_message("assistant", avatar="🤖"):
+        status = st.empty()
+        answer = st.empty()
+        buffer = ""
+
         try:
-            response = st.write_stream(
-                handle_query_stream(prompt, st.session_state.session_id)
-            )
+            for ev in handle_query_stream(prompt, st.session_state.session_id):
+                if ev["type"] == "tool":
+                    icon, label = TOOL_META.get(
+                        ev["name"], ("⚙️", f"Calling {ev['name']}")
+                    )
+                    status.markdown(
+                        f"<div style='color:#4b5563;font-size:0.86rem;"
+                        f"padding:0.25rem 0;font-weight:500;'>"
+                        f"{icon} {label}…</div>",
+                        unsafe_allow_html=True,
+                    )
+                elif ev["type"] == "tool_done":
+                    status.empty()
+                elif ev["type"] == "text":
+                    buffer += ev["content"]
+                    status.empty()
+                    answer.markdown(buffer)
+
+            response = buffer or "No response generated."
         except Exception as e:
             response = f"Error: {e}"
-            st.markdown(response)
+            answer.markdown(response)
+
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 
