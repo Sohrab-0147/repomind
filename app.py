@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 try:
-    for key in ("OPENROUTER_API_KEY", "OPENROUTER_MODEL", "QDRANT_URL", "QDRANT_API_KEY", "QDRANT_COLLECTION"):
+    for key in ("GROQ_API_KEY", "GROQ_MODEL", "QDRANT_URL", "QDRANT_API_KEY", "QDRANT_COLLECTION"):
         if key in st.secrets:
             os.environ[key] = st.secrets[key]
 except Exception:
@@ -17,10 +17,9 @@ except Exception:
 from repomind.agent.orchestrator import handle_query_stream
 from repomind.context.indexers.semantic_qdrant import index_codebase
 
-st.set_page_config(page_title="RepoMind", page_icon="🧠", layout="wide")
-
-st.title("🧠 RepoMind")
-st.caption("RAG-powered code assistant — ask questions about any codebase")
+st.set_page_config(page_title="RepoMind", page_icon="brain", layout="wide")
+st.title("RepoMind")
+st.caption("RAG-powered code assistant")
 
 
 @st.cache_resource(show_spinner="Indexing codebase...")
@@ -29,27 +28,28 @@ def load_index(repo_path: str):
     return True
 
 
-with st.sidebar:
-    st.header("⚙️ Settings")
-    default_repo = str(Path.cwd())
-    repo_path = st.text_input("Repository path", value=default_repo)
+def _default_repo_path() -> str:
+    cwd = Path.cwd()
+    if (cwd / "repomind").is_dir():
+        return str(cwd)
+    here = Path(__file__).resolve().parent
+    if (here / "repomind").is_dir():
+        return str(here)
+    return str(cwd)
 
+
+with st.sidebar:
+    st.header("Settings")
+    repo_path = st.text_input("Repository path", value=_default_repo_path())
     if st.button("Re-index repository"):
         st.cache_resource.clear()
         with st.spinner("Re-indexing..."):
             index_codebase(repo_path, force_reindex=True)
-        st.success("Re-indexed successfully")
-
+        st.success("Re-indexed")
     if st.button("New session"):
         st.session_state.session_id = str(uuid.uuid4())
         st.session_state.messages = []
         st.rerun()
-
-    st.divider()
-    st.markdown("**How to use**")
-    st.markdown("- Ask a question about the code")
-    st.markdown("- The agent cites files and remembers context")
-    st.markdown("- Try: *'how does the config loader work?'*")
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -70,14 +70,10 @@ if prompt := st.chat_input("Ask about the codebase..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-
     with st.chat_message("assistant"):
         try:
-            response = st.write_stream(
-                handle_query_stream(prompt, st.session_state.session_id)
-            )
+            response = st.write_stream(handle_query_stream(prompt, st.session_state.session_id))
         except Exception as e:
             response = f"Error: {e}"
             st.markdown(response)
-
     st.session_state.messages.append({"role": "assistant", "content": response})
