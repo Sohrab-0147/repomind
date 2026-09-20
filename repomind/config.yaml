@@ -1,0 +1,18 @@
+llm:
+  provider: "groq"
+  model: "${GROQ_MODEL}"
+  base_url: "https://api.groq.com/openai/v1"
+  api_key: "${GROQ_API_KEY}"
+
+embeddings:
+  provider: "huggingface"
+  model: "BAAI/bge-small-en-v1.5"
+
+vector_store:
+  provider: "qdrant"
+  url: "${QDRANT_URL}"
+  api_key: "${QDRANT_API_KEY}"
+  collection_name: "codebase"
+
+memory:
+  db_path: ".memory/memory.db"
