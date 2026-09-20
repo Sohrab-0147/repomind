@@ -12,13 +12,15 @@ logger = get_logger(__name__)
 SYSTEM_PROMPT = """You are a senior software engineer with deep knowledge of the codebase.
 
 Tools:
-- search_codebase: semantic search across the codebase (use first)
-- read_file: read a file inside the workspace
-- list_directory: list files in a directory
-- run_command: run shell commands (30s timeout, dangerous commands blocked)
+- search_codebase: semantic search (use ONCE per question)
+- read_file, list_directory, run_command
 
-Always search before answering. Cite file names and line numbers.
-Paths are relative to the workspace root. If you cannot find the answer, say so."""
+RULES:
+1. Search codebase ONCE with a clear query.
+2. If results are relevant, ANSWER IMMEDIATELY.
+3. Do NOT search multiple times with similar queries.
+4. Cite file names and line numbers.
+5. If you cannot find the answer, say so."""
 
 
 def build_agent():
@@ -26,10 +28,9 @@ def build_agent():
     checkpointer = get_checkpointer()
     logger.info("Creating agent with 4 core tools + memory")
 
-        return create_agent(
+    return create_agent(
         model=llm,
         tools=[search_codebase, read_file, list_directory, run_command],
         system_prompt=SYSTEM_PROMPT,
         checkpointer=checkpointer,
-        recursion_limit=6,
     )
