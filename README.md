@@ -38,3 +38,5 @@ poetry run streamlit run app.py
 - /switch <id> - resume a past session
 - /session - show current session id
 - /exit - quit
+**🔗 Live Demo:** https://repomind01.streamlit.app/
+**📦 Source:** https://github.com/Sohrab-0147/repomind
