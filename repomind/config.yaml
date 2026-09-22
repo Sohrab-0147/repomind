@@ -1,8 +1,8 @@
 llm:
-  provider: "groq"
-  model: "${GROQ_MODEL}"
-  base_url: "https://api.groq.com/openai/v1"
-  api_key: "${GROQ_API_KEY}"
+  provider: "cerebras"
+  model: "${CEREBRAS_MODEL}"
+  base_url: "https://api.cerebras.ai/v1"
+  api_key: "${CEREBRAS_API_KEY}"
 
 embeddings:
   provider: "huggingface"

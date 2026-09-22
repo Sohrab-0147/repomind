@@ -18,7 +18,7 @@ def get_llm() -> ChatOpenAI:
     api_key = config["llm"]["api_key"]
 
     if not api_key:
-        raise ValueError(f"{provider.upper()}_API_KEY is missing. Check your .env file.")
+        raise ValueError(f"{provider.upper()}_API_KEY is missing. Check your .env.")
 
     logger.info(f"Using LLM provider: {provider}, model: {model}")
 
@@ -27,7 +27,7 @@ def get_llm() -> ChatOpenAI:
         api_key=api_key,
         base_url=base_url,
         temperature=0,
-        max_tokens=400,
+        max_tokens=600,
     )
 
 

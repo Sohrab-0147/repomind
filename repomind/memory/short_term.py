@@ -9,9 +9,10 @@ from repomind.observability.logger import get_logger
 logger = get_logger(__name__)
 config = load_config()
 
+MAX_MESSAGES = 4  # keep only the last 4 messages (2 turns)
+
 
 def get_checkpointer() -> SqliteSaver:
-    """Return a SQLite-backed checkpointer for LangGraph agent memory."""
     db_path = config["memory"]["db_path"]
     Path(db_path).parent.mkdir(parents=True, exist_ok=True)
     logger.info(f"Using SQLite checkpointer at {db_path}")
