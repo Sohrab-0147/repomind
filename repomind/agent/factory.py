@@ -6,7 +6,7 @@ from langchain_core.tools import StructuredTool
 
 from repomind.agent.tools import search_codebase
 from repomind.llm.factory import get_llm
-from repomind.mcp.educosys_mcp_client import get_mcp_tools
+from repomind.mcp.client import get_mcp_tools
 from repomind.memory.short_term import get_checkpointer
 from repomind.observability.logger import get_logger
 from repomind.tools.filesystem_tools import list_directory, read_file
