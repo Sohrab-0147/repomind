@@ -12,16 +12,25 @@ DENSE_VECTOR_NAME = "dense"
 SPARSE_VECTOR_NAME = "sparse"
 
 _vector_store: QdrantVectorStore | None = None
-
-
 _embedder_cache = None
+_sparse_cache = None
 
 
 def _get_embedder_cached():
+    """Load the BGE embedder once and reuse it across queries."""
     global _embedder_cache
     if _embedder_cache is None:
         _embedder_cache = get_embedder()
     return _embedder_cache
+
+
+def _get_sparse_cached():
+    """Load the BM25 sparse embedder once and reuse it."""
+    global _sparse_cache
+    if _sparse_cache is None:
+        _sparse_cache = FastEmbedSparse(model_name="Qdrant/bm25")
+    return _sparse_cache
+
 
 def _get_store() -> QdrantVectorStore:
     global _vector_store
@@ -33,8 +42,8 @@ def _get_store() -> QdrantVectorStore:
         _vector_store = QdrantVectorStore(
             client=client,
             collection_name=config["vector_store"]["collection_name"],
-            embedding=get_embedder_cached(),
-            sparse_embedding=FastEmbedSparse(model_name="Qdrant/bm25"),
+            embedding=_get_embedder_cached(),
+            sparse_embedding=_get_sparse_cached(),
             retrieval_mode=RetrievalMode.HYBRID,
             vector_name=DENSE_VECTOR_NAME,
             sparse_vector_name=SPARSE_VECTOR_NAME,
