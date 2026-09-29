@@ -1,11 +1,13 @@
 import asyncio
 import threading
-from langchain.agents.middleware import PIIMiddleware
-from repomind.guardrails.middleware import ContentFilterMiddleware
+
 from langchain.agents import create_agent
+from langchain.agents.middleware import PIIMiddleware
 from langchain_core.tools import StructuredTool
 
 from repomind.agent.tools import search_codebase
+from repomind.cache import init_cache
+from repomind.guardrails.middleware import ContentFilterMiddleware
 from repomind.llm.factory import get_llm
 from repomind.mcp.client import get_mcp_tools
 from repomind.memory.short_term import get_checkpointer
@@ -13,10 +15,12 @@ from repomind.observability.logger import get_logger
 from repomind.tools.filesystem_tools import list_directory, read_file
 from repomind.tools.terminal_tools import run_command
 
+init_cache()
+
 logger = get_logger(__name__)
 
-SYSTEM_PROMPT = """You are a senior software engineer with deep knowledge of the codebase. Search codebase ONCE with a clear query.1. ALWAYS search the codebase BEFORE claiming you don't know something.1. ALWAYS search the codebase BEFORE claiming you don't know something.
-2. Search ONCE with a clear query.
+SYSTEM_PROMPT = """You are a senior software engineer with deep knowledge of the codebase.
+
 Tools available:
 - search_codebase: semantic search across the codebase (use ONCE per question)
 - read_file, list_directory, run_command: sandboxed filesystem and shell
@@ -39,14 +43,12 @@ KEEP_MCP_TOOLS = {
     "get_file_contents",
 }
 
-# Dedicated event loop on a background thread for sync-wrapping async MCP tools
 _loop = asyncio.new_event_loop()
 _thr = threading.Thread(target=_loop.run_forever, name="mcp-async-runner", daemon=True)
 _thr.start()
 
 
 def _run_async(coro):
-    """Run an async coroutine from sync code using the background event loop."""
     if not _thr.is_alive():
         _thr.start()
     future = asyncio.run_coroutine_threadsafe(coro, _loop)
@@ -54,7 +56,6 @@ def _run_async(coro):
 
 
 def _make_sync(tool):
-    """Wrap an async-only StructuredTool with a sync func."""
     if not isinstance(tool, StructuredTool):
         return tool
     if tool.func is not None or tool.coroutine is None:
@@ -87,8 +88,8 @@ def build_agent():
 
     tools = [search_codebase, read_file, list_directory, run_command] + mcp_tools
     logger.info(f"Creating agent with {len(tools)} tools")
-    
-        return create_agent(
+
+    return create_agent(
         model=llm,
         tools=tools,
         system_prompt=SYSTEM_PROMPT,

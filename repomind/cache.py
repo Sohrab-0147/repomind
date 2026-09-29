@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from langchain_core.caches import SQLiteCache
+from langchain_community.cache import SQLiteCache
 from langchain_core.globals import set_llm_cache
 
 from repomind.observability.logger import get_logger
