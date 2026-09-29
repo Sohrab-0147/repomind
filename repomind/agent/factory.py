@@ -1,6 +1,7 @@
 import asyncio
 import threading
-
+from langchain.agents.middleware import PIIMiddleware
+from repomind.guardrails.middleware import ContentFilterMiddleware
 from langchain.agents import create_agent
 from langchain_core.tools import StructuredTool
 
@@ -86,10 +87,21 @@ def build_agent():
 
     tools = [search_codebase, read_file, list_directory, run_command] + mcp_tools
     logger.info(f"Creating agent with {len(tools)} tools")
-
-    return create_agent(
+    
+        return create_agent(
         model=llm,
         tools=tools,
         system_prompt=SYSTEM_PROMPT,
         checkpointer=checkpointer,
+        middleware=[
+            ContentFilterMiddleware(),
+            PIIMiddleware("email", strategy="redact", apply_to_input=True),
+            PIIMiddleware("credit_card", strategy="mask", apply_to_input=True),
+            PIIMiddleware(
+                "api_key",
+                detector=r"sk-[a-zA-Z0-9]{20,}",
+                strategy="block",
+                apply_to_input=True,
+            ),
+        ],
     )
