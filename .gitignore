@@ -18,3 +18,5 @@ models/
 .idea/
 .DS_Store
 .streamlit/secrets.toml
+tests/**/__pycache__/
+tests/**/*.db
