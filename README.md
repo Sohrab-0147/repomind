@@ -40,3 +40,13 @@ poetry run streamlit run app.py
 - /exit - quit
 **🔗 Live Demo:** https://repomind01.streamlit.app/
 **📦 Source:** https://github.com/Sohrab-0147/repomind
+## Evaluation
+| Metric | Score |
+|--------|-------|
+| Faithfulness | 0.XX |
+| Answer Relevancy | 0.XX |
+| Context Precision | 0.XX |
+| Context Recall | 0.XX |
+
+Run with: `poetry run python tests/eval/run_eval.py`
+

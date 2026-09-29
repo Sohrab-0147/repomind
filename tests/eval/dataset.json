@@ -1,0 +1,12 @@
+[
+  {"question": "How does the config loader work?", "ground_truth": "load_config reads config.yaml and resolves ${VAR} placeholders from environment variables"},
+  {"question": "Why does the parser stop descending after finding a function?", "ground_truth": "To avoid indexing nested functions separately — keeps chunks at the top level"},
+  {"question": "What is ParsedChunk used for?", "ground_truth": "A dataclass representing a parsed code chunk with name, type, content, source, and line numbers"},
+  {"question": "Where is the sandbox enforced?", "ground_truth": "In _safe_resolve in filesystem_tools.py, which calls relative_to(workspace_root)"},
+  {"question": "What shell commands are blocked?", "ground_truth": "BLOCKED_COMMANDS in terminal_tools.py blocks rm -rf /, mkfs, dd if=, fork bombs, shutdown, reboot"},
+  {"question": "How does hybrid retrieval work?", "ground_truth": "Dense BGE embeddings plus BM25 sparse vectors fused by Qdrant in RetrievalMode.HYBRID"},
+  {"question": "What model is used for embeddings?", "ground_truth": "BAAI/bge-small-en-v1.5, 384 dimensions, runs locally on CPU"},
+  {"question": "How does memory persist across sessions?", "ground_truth": "LangGraph SqliteSaver checkpointer keyed by thread_id, stored in .memory/memory.db"},
+  {"question": "What is the agent's system prompt?", "ground_truth": "Senior software engineer prompt requiring search_codebase before answering, with file and line citations"},
+  {"question": "How many GitHub MCP tools are enabled?", "ground_truth": "6 of 26 — list_issues, create_issue, get_pull_request, list_commits, search_repositories, get_file_contents"}
+]

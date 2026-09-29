@@ -6,6 +6,7 @@ from rich.prompt import Prompt
 from repomind.context.indexers.semantic_qdrant import index_codebase
 from repomind.agent.orchestrator import handle_query_stream
 from repomind.memory.session import get_current_session, new_session, switch_session
+from repomind.tasks.orchestrator import run_plan
 from repomind.observability.logger import get_logger
 
 load_dotenv()
@@ -49,10 +50,27 @@ def run():
             try:
                 console.print("[bold]Answer:[/bold] ", end="")
                 for token in handle_query_stream(question, session_id):
-                    console.print(token, end="", soft_wrap=True)
+                    if isinstance(token, dict):
+                        if token.get("type") == "text":
+                            console.print(token.get("content", ""), end="", soft_wrap=True)
+                    else:
+                        console.print(token, end="", soft_wrap=True)
                 console.print("\n")
             except Exception as e:
                 logger.error(f"Query failed: {e}")
+                console.print(f"\n[red]Error: {e}[/red]\n")
+
+        elif user_input.startswith("/plan"):
+            goal = user_input.removeprefix("/plan").strip()
+            if not goal:
+                console.print("[yellow]Usage: /plan <goal>[/yellow]")
+                continue
+            console.print(f"[dim]Planning: {goal}...[/dim]\n")
+            try:
+                result = run_plan(goal)
+                console.print(f"\n{result}\n")
+            except Exception as e:
+                logger.error(f"Plan failed: {e}")
                 console.print(f"\n[red]Error: {e}[/red]\n")
 
         elif user_input == "/new_session":
@@ -73,6 +91,7 @@ def run():
         else:
             console.print("[yellow]Commands:[/yellow]")
             console.print("  /ask <question>       — ask about the codebase")
+            console.print("  /plan <goal>          — plan and execute a multi-step goal")
             console.print("  /new_session          — start a fresh conversation")
             console.print("  /switch <session_id>  — resume a past session")
             console.print("  /session              — show current session id")
