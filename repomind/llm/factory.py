@@ -1,5 +1,6 @@
 import os
-
+from repomind.cache import init_cache
+init_cache()
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_openai import ChatOpenAI
 
