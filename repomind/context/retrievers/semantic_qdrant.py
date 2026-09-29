@@ -1,3 +1,5 @@
+from langchain_community.document_compressors.flashrank_rerank import FlashrankRerank
+from langchain_core.documents import Document
 from langchain_qdrant import FastEmbedSparse, QdrantVectorStore, RetrievalMode
 from qdrant_client import QdrantClient
 
@@ -14,10 +16,10 @@ SPARSE_VECTOR_NAME = "sparse"
 _vector_store: QdrantVectorStore | None = None
 _embedder_cache = None
 _sparse_cache = None
+_reranker_cache = None
 
 
 def _get_embedder_cached():
-    """Load the BGE embedder once and reuse it across queries."""
     global _embedder_cache
     if _embedder_cache is None:
         _embedder_cache = get_embedder()
@@ -25,11 +27,20 @@ def _get_embedder_cached():
 
 
 def _get_sparse_cached():
-    """Load the BM25 sparse embedder once and reuse it."""
     global _sparse_cache
     if _sparse_cache is None:
         _sparse_cache = FastEmbedSparse(model_name="Qdrant/bm25")
     return _sparse_cache
+
+
+def _get_reranker_cached():
+    global _reranker_cache
+    if _reranker_cache is None:
+        logger.info("Loading FlashRank cross-encoder reranker")
+        _reranker_cache = FlashrankRerank(
+            model="ms-marco-MiniLM-L-12-v2", top_n=5
+        )
+    return _reranker_cache
 
 
 def _get_store() -> QdrantVectorStore:
@@ -51,14 +62,21 @@ def _get_store() -> QdrantVectorStore:
     return _vector_store
 
 
-def retrieve(query: str, k: int = 5) -> list[dict]:
-    """Hybrid retrieval: dense + BM25 sparse, fused by Qdrant."""
-    logger.info(f"Hybrid retrieve top {k} for: {query}")
+def retrieve(query: str, k: int = 20, top_n: int = 5) -> list[dict]:
+    """Hybrid retrieve (k=20) → cross-encoder rerank → top_n chunks."""
+    logger.info(f"Hybrid retrieve k={k} for: {query}")
 
-    results = _get_store().similarity_search_with_score(query, k=k)
+    raw = _get_store().similarity_search_with_score(query, k=k)
+    docs = [
+        Document(page_content=d.page_content, metadata=d.metadata)
+        for d, _ in raw
+    ]
+
+    logger.info(f"Reranking {len(docs)} → top {top_n}")
+    reranked = _get_reranker_cached().compress_documents(docs, query)
 
     chunks = []
-    for doc, score in results:
+    for doc in reranked[:top_n]:
         meta = doc.metadata
         chunks.append({
             "content": doc.page_content,
@@ -67,8 +85,8 @@ def retrieve(query: str, k: int = 5) -> list[dict]:
             "type": meta.get("type", "unknown"),
             "start_line": meta.get("start_line", 0),
             "end_line": meta.get("end_line", 0),
-            "distance": score,
+            "distance": 0.0,
         })
 
-    logger.info(f"Retrieved {len(chunks)} chunks (hybrid)")
+    logger.info(f"Returned {len(chunks)} reranked chunks")
     return chunks
